@@ -4,176 +4,20 @@
     <title>Gauge Chart</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-      html, body {
-        height: 100%;
-        margin: 0;
-      }
-
-      div {
-        padding: 15px;
-      }
-
-      button {
-        font-family: "Noto Sans KR", sans-serif;
-        padding: 0.5rem 1rem;
-        font-size: 0.825rem;
-        font-weight: 400;
-        text-align: center;
-        border: none;
-        border-radius: 4px;
-        background: #1976D2;
-        opacity: 0.5;
-        color: #fff;
-      }
-      
-      button:active,
-      button:hover,
-      button:focus {
-        background: #1976D2;
-        opacity: 1;
-        outline: 0;
-        cursor: pointer;
-      }
-      button:disabled {
-        opacity: 0.5;
-      }
-      
-      div.button-group {
-        text-align: center;
-      }
-      
-      canvas {
-        width: 100vw;
-      }
-    </style>
+    <link href="css/chart.css" rel="stylesheet">
   </head>
 
   <body>
-    <div>
+    <div class="chart">
       <div class="button-group">
-        <button id="start-btn" onclick="drawStart()">시작</button>
-        <button id="end-btn" onclick="drawStop()">종료</button>
+        <button id="button--start">시작</button>
+        <button id="button--stop">종료</button>
       </div>
-      <canvas class="gauge-chart" style="border: 1px solid"></canvas>
+      <div class="canvas-group">
+        <canvas class="canvas--gauge"></canvas>
+      </div>
     </div>
   </body>
 
-  <script>
-    const canvas = document.querySelector('.gauge-chart');
-    const context = canvas.getContext('2d');
-    const startAngle = 45 * Math.PI / 180;
-    const endAngle = 135 * Math.PI / 180;
-    
-    const x = context.canvas.width / 2;
-    const y = context.canvas.height / 2;
-    const radius = 100;
-    const angle = 2.7;
-    const endPoint = 135;
-    const speed = 10;
-    
-    let randomAngle = 135;
-    let randomPercent = 0;
-    let prevAngle = 0;
-    let stepAngle = 135;
-    let timer;
-
-    function drawBackground () {
-      context.beginPath();
-      context.arc(x, y, radius, startAngle, endAngle, true);
-      context.lineWidth = 35;
-      context.strokeStyle = "#eee";
-      context.stroke();
-      context.closePath();
-    }
-    
-    function drawText() {
-      context.beginPath();
-      context.font = 'bold 48px Arial';
-      context.textAlign = 'center';
-      context.fillText(`${randomPercent}`, x, y);
-      context.font = 'bold 24px Arial';
-      context.fillText('percent', x, y + 48);
-      context.closePath();
-    }
-
-    function getRandom () {
-      let randomNumber = Math.random();
-      randomPercent = (randomNumber * 100).toFixed(1);
-      randomAngle = (randomPercent * angle) + endPoint;
-    }
-
-    function drawAnimation () {
-      console.log('start Animation');
-      
-      if (stepAngle === Math.floor(randomAngle)) {
-        prevAngle = randomAngle;
-        timer = setTimeout(drawStart, 5000);
-        return;
-      }
-      
-      initDraw();
-    
-      stepAngle += prevAngle < randomAngle ? 1 : -1;
-      context.beginPath();
-      context.lineWidth = 35;
-      context.strokeStyle = 'yellow';
-      context.arc(x, y, radius, stepAngle * Math.PI / 180, endAngle, true);
-      context.stroke();
-      context.closePath();
-      
-      raf = window.requestAnimationFrame(drawAnimation);
-    }
-
-    function drawStart () {
-      console.log('START');
-      
-      getRandom();
-      initDraw();
-      drawAnimation();
-    }
-    
-    function drawStop () {
-      clearTimeout(timer);
-      window.cancelAnimationFrame(raf);
-      
-      randomAngle = 135;
-      randomPercent = 0;
-      prevAngle = 0;
-      stepAngle = 135;
-
-      initDraw();
-    }
-
-    function initDraw () {
-      context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-      drawBackground();
-      drawText();
-    }
-    
-    initDraw();
-
-    // const chart = {
-    //   getRandom: function () {
-    //     let randomNumber = Math.random()
-    //     this.randomPercent = (randomNumber * 100).toFixed(1);
-    //     this.randomAngle = (this.randomPercent * this.angle) + this.endPoint;
-    //   },
-    //   drawText: function () {
-    //     context.beginPath();
-    //     context.font = 'bold 48px Arial';
-    //     context.textAlign = 'center';
-    //     context.fillText(`${this.randomPercent}`, this.x, this.y);
-    //     context.font = 'bold 24px Arial';
-    //     context.fillText('percent', this.x, this.y + 48);
-    //   },
-    //   draw: function () {
-    //     context.beginPath();
-    //     context.lineWidth = 35;
-    //     context.strokeStyle = 'yellow';
-    //     context.arc(this.x, this.y, this.radius, this.randomAngle * Math.PI / 180, endAngle, true);
-    //     context.stroke();
-    //   }
-    // }
-  </script>
+  <script type="text/javascript" src="js/main.js"></script>
 </html>

@@ -1,6 +1,7 @@
 (function() {
   const canvas = document.querySelector('.canvas--gauge');
   const context = canvas.getContext('2d');
+  const offScreenCanvas = document.createElement('canvas');
   const startAngle = 45 * Math.PI / 180;
   const endAngle = 135 * Math.PI / 180;
   
@@ -15,25 +16,29 @@
   let randomPercent = 0;
   let prevAngle = 0;
   let stepAngle = 135;
-  let timer, raf;
+  let offScreenContext, timer, raf;
 
   function drawBackground () {
-    context.beginPath();
-    context.arc(x, y, radius, startAngle, endAngle, true);
-    context.lineWidth = 35;
-    context.strokeStyle = '#eee';
-    context.stroke();
-    context.closePath();
+    offScreenContext.beginPath();
+    offScreenContext.arc(x, y, radius, startAngle, endAngle, true);
+    offScreenContext.lineWidth = 35;
+    offScreenContext.strokeStyle = '#eee';
+    offScreenContext.stroke();
+    offScreenContext.closePath();
+
+    context.drawImage(offScreenCanvas, 0, 0);
   }
   
   function drawText() {
-    context.beginPath();
-    context.font = 'bold 48px Arial';
-    context.textAlign = 'center';
-    context.fillText(`${randomPercent}`, x, y);
-    context.font = 'bold 24px Arial';
-    context.fillText('percent', x, y + 48);
-    context.closePath();
+    offScreenContext.beginPath();
+    offScreenContext.font = 'bold 48px Arial';
+    offScreenContext.textAlign = 'center';
+    offScreenContext.fillText(`${randomPercent}`, x, y);
+    offScreenContext.font = 'bold 24px Arial';
+    offScreenContext.fillText('percent', x, y + 48);
+    offScreenContext.closePath();
+
+    context.drawImage(offScreenCanvas, 0, 0);
   }
 
   function getRandomData () {
@@ -54,12 +59,14 @@
     initDraw();
     
     stepAngle += prevAngle < randomAngle ? 1 : -1;
-    context.beginPath();
-    context.lineWidth = 35;
-    context.strokeStyle = 'yellow';
-    context.arc(x, y, radius, stepAngle * Math.PI / 180, endAngle, true);
-    context.stroke();
-    context.closePath();
+    offScreenContext.beginPath();
+    offScreenContext.lineWidth = 35;
+    offScreenContext.strokeStyle = 'yellow';
+    offScreenContext.arc(x, y, radius, stepAngle * Math.PI / 180, endAngle, true);
+    offScreenContext.stroke();
+    offScreenContext.closePath();
+
+    context.drawImage(offScreenCanvas, 0, 0);
     
     raf = window.requestAnimationFrame(drawAnimation);
   }
@@ -85,7 +92,12 @@
   }
   
   function initDraw () {
+    offScreenCanvas.width = context.canvas.width * 2;
+    offScreenCanvas.height = context.canvas.width * 2;
+    offScreenContext = offScreenCanvas.getContext('2d');
+    
     context.clearRect(x - context.canvas.width, y - context.canvas.height, x * 2, y * 2);
+    
     drawBackground();
     drawText();
   }
@@ -93,8 +105,8 @@
   function init () {
     context.scale(0.5, 0.5);
     
-    const startButton = document.querySelector('#button--start');
-    const stopButton = document.querySelector('#button--stop');
+    const startButton = document.querySelector('.button--start');
+    const stopButton = document.querySelector('.button--stop');
     
     startButton.addEventListener('click', drawStart);
     stopButton.addEventListener('click', drawStop);

@@ -16,7 +16,7 @@
   let randomPercent = 0;
   let prevAngle = 0;
   let stepAngle = 135;
-  let offScreenContext, timer, raf;
+  let offScreenContext, drawTimer, drawRaf;
 
   function drawBackground () {
     offScreenContext.beginPath();
@@ -52,7 +52,7 @@
     
     if (stepAngle === Math.floor(randomAngle)) {
       prevAngle = randomAngle;
-      timer = setTimeout(drawStart, speed);
+      drawTimer = setTimeout(drawStart, speed);
       return;
     }
     
@@ -68,7 +68,7 @@
 
     context.drawImage(offScreenCanvas, 0, 0);
     
-    raf = window.requestAnimationFrame(drawAnimation);
+    drawRaf = window.requestAnimationFrame(drawAnimation);
   }
 
   function drawStart () {
